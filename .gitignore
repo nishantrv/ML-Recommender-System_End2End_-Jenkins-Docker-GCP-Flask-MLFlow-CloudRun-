@@ -1,0 +1,7 @@
+logs/
+artifacts/
+mlruns/
+Materials/
+venv/
+test.py
+MLOPS_Project_1.egg-info/
