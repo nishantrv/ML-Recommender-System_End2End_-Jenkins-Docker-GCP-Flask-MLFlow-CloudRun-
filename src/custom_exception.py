@@ -10,7 +10,7 @@ class CustomException(Exception):
      # we don't need to create custom class again and again to show our custom error 
     @staticmethod
     def get_detailed_error_message(error_message, error_detail:sys):
-        _,_,exc_tb = error_detail.exc_info() #we only need the traceback
+        _,_,exc_tb = traceback.sys.exc_info() #we only need the traceback
         file_name = exc_tb.tb_frame.f_code.co_filename # to get the filename
         line_number = exc_tb.tb_lineno # line number 
 
