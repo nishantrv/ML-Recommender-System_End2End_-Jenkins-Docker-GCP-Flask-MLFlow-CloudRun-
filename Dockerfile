@@ -1,9 +1,10 @@
 # Use a lightweight Python image
-FROM python:slim
+FROM python:3.13-slim
 
 # Set environment variables to prevent Python from writing .pyc files & Ensure Python output is not buffered
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    DEBIAN_FRONTEND=noninteractive
 
 # Set the working directory
 WORKDIR /app
@@ -18,7 +19,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY . .
 
 # Install the package in editable mode
-RUN pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir -U pip \
+    && pip install --no-cache-dir "scikit-learn<1.8" \
+    && pip install --no-cache-dir -e .
 
 # Train the model before running the application
 RUN python pipeline/training_pipeline.py
