@@ -5,6 +5,9 @@ pipeline {
     VENV_DIR    = 'venv'
     GCP_PROJECT = "fluent-protocol-480613-d8"
     GCLOUD_PATH = "/var/jenkins_home/google-cloud-sdk/bin"
+    REGION      = "us-central1"
+    SERVICE     = "ml-project"
+    IMAGE       = "gcr.io/fluent-protocol-480613-d8/ml-project:latest"
   }
 
   stages {
@@ -23,9 +26,9 @@ pipeline {
       }
     }
 
-    stage('Setting Up our virtual environment and Installing Dependencies') {
+    stage('Setting Up Virtualenv and Installing Dependencies') {
       steps {
-        echo 'Setting Up our virtual environment and Installing Dependencies.......'
+        echo 'Setting up virtualenv and installing dependencies...'
         sh '''
           set -eux
           python3 -m venv "${VENV_DIR}"
@@ -36,10 +39,10 @@ pipeline {
       }
     }
 
-    stage('Building and Pushing Docker Image to GCR') {
+    stage('Build and Push Docker Image (GCR)') {
       steps {
         withCredentials([file(credentialsId: 'gcp-key', variable: 'GCP_KEYFILE')]) {
-          echo 'Building and Pushing Docker Image to GCR'
+          echo 'Building and pushing Docker image to GCR...'
           sh '''
             set -eux
             export PATH="$PATH:${GCLOUD_PATH}"
@@ -49,17 +52,17 @@ pipeline {
 
             gcloud auth configure-docker --quiet
 
-            docker build -t "gcr.io/${GCP_PROJECT}/ml-project:latest" .
-            docker push "gcr.io/${GCP_PROJECT}/ml-project:latest"
+            docker build -t "${IMAGE}" .
+            docker push "${IMAGE}"
           '''
         }
       }
     }
 
-    stage('Building and Pushing Docker Image to GCR') {
+    stage('Deploy to Cloud Run') {
       steps {
         withCredentials([file(credentialsId: 'gcp-key', variable: 'GCP_KEYFILE')]) {
-          echo 'Building and Pushing Docker Image to GCR'
+          echo 'Deploying to Cloud Run...'
           sh '''
             set -eux
             export PATH="$PATH:${GCLOUD_PATH}"
@@ -67,11 +70,11 @@ pipeline {
             gcloud auth activate-service-account --key-file="${GCP_KEYFILE}"
             gcloud config set project "${GCP_PROJECT}"
 
-            gcloud run deploy ml-project \ 
-                --image=gcr.io/${GCP_PROJECT}/ml-project:latest \
-                --platform=managed \
-                --region=us-central1 \
-                --allow-unauthenticated
+            gcloud run deploy "${SERVICE}" \
+              --image="${IMAGE}" \
+              --platform=managed \
+              --region="${REGION}" \
+              --allow-unauthenticated
           '''
         }
       }
