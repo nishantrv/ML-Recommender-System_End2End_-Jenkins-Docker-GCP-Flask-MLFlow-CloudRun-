@@ -56,5 +56,26 @@ pipeline {
       }
     }
 
+    stage('Building and Pushing Docker Image to GCR') {
+      steps {
+        withCredentials([file(credentialsId: 'gcp-key', variable: 'GCP_KEYFILE')]) {
+          echo 'Building and Pushing Docker Image to GCR'
+          sh '''
+            set -eux
+            export PATH="$PATH:${GCLOUD_PATH}"
+
+            gcloud auth activate-service-account --key-file="${GCP_KEYFILE}"
+            gcloud config set project "${GCP_PROJECT}"
+
+            gcloud run deploy ml-project \ 
+                --image=gcr.io/${GCP_PROJECT}/ml-project:latest \
+                --platform=managed \
+                --region=us-central1 \
+                --allow-unauthenticated
+          '''
+        }
+      }
+    }
+
   }
 }
