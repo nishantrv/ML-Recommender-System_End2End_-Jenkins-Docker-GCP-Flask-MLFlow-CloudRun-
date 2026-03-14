@@ -33,24 +33,11 @@ A **production-grade, end-to-end machine learning recommender system** covering 
 Most ML portfolio projects stop at a Jupyter notebook. This one doesn't. The goal was to build a recommender system the way you'd build one at a real company — with automated pipelines, experiment tracking, containerised deployment, and a serving layer that handles live traffic.
 
 ---
-
 ## 🏗 Architecture
 
-```
-┌──────────────┐     ┌──────────────┐     ┌──────────────────┐
-│  Raw Data     │────▶│  Data        │────▶│  Feature         │
-│  (CSV/API)    │     │  Validation  │     │  Engineering     │
-└──────────────┘     └──────────────┘     └────────┬─────────┘
-                                                    │
-                                                    ▼
-┌──────────────┐     ┌──────────────┐     ┌──────────────────┐
-│  Cloud Run    │◀────│  Docker      │◀────│  Model Training  │
-│  (Serving)    │     │  Container   │     │  + MLflow Track  │
-└──────┬───────┘     └──────────────┘     └──────────────────┘
-       │                     ▲
-       │              ┌──────┴───────┐
-       │              │   Jenkins    │
-       └──────────────│   CI/CD     │
+> End-to-end pipeline from data ingestion to serverless deployment
+
+![Architecture Diagram](assets/architecture.png)
                       └──────────────┘
 ```
 
