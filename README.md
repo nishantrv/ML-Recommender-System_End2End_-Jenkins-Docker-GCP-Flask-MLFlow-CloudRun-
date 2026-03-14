@@ -39,7 +39,7 @@ Most ML portfolio projects stop at a Jupyter notebook. This one doesn't. The goa
 
 ![Architecture Diagram](assets/architecture.png)
                     
-```
+
 
 **Data Flow:** Raw data → Validation & Cleaning → Feature Engineering → Model Training (with MLflow experiment tracking) → Containerise with Docker → Push to GCP Container Registry → Deploy to Cloud Run via Jenkins pipeline.
 
